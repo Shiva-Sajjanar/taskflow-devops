@@ -14,18 +14,23 @@ pipeline {
             }
         }
 
-        stage('Python Syntax Check') {
-            steps {
-                sh 'python3 -m py_compile app.py'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh '''
                     docker build \
                     -t ${IMAGE_NAME}:${IMAGE_TAG} \
                     .
+                '''
+            }
+        }
+
+        stage('Python Syntax Check') {
+            steps {
+                sh '''
+                    docker run --rm \
+                    --entrypoint python \
+                    ${IMAGE_NAME}:${IMAGE_TAG} \
+                    -m py_compile app.py
                 '''
             }
         }
